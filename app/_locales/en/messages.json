@@ -1,0 +1,19 @@
+{
+  "appName": {
+    "message": "goto",
+    "description": "The name of the application"
+  },
+  "appDescription": {
+    "message": "Go to any website quick",
+    "description": "The description of the application"
+  },
+  "configKeyword": {
+    "message": "Keyword"
+  },
+  "configRedirect": {
+    "message": "Redirect Url"
+  },
+  "configNew": {
+    "message": "New"
+  }
+}
