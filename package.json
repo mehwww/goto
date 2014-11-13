@@ -1,6 +1,6 @@
 {
   "name": "goto",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A Chrome extension help you go to any website quick",
   "dependencies": {},
   "devDependencies": {
