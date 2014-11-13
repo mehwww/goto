@@ -1,0 +1,25 @@
+{
+  "appName": {
+    "message": "goto",
+    "description": "The name of the application"
+  },
+  "appDescription": {
+    "message": "Go to any website quick",
+    "description": "The description of the application"
+  },
+  "configKeyword": {
+    "message": "Keyword"
+  },
+  "configRedirect": {
+    "message": "Redirect Url"
+  },
+  "configNew": {
+    "message": "New"
+  },
+  "optionTitle":{
+    "message":"Goto - Options"
+  },
+  "optionDescription":{
+    "message":"Set your keyword and redirect here. If you type <b>\"g\" + keyword</b> into the address bar, you'll be redirected to the url specified here.<br/>You can also have custom redirect, like you can set keyword <b>l</b> for redirect <b>http://localhost:$$1/</b>, then if you type \"g l 3000\" in the address bar, you will be redirect to <b>http://localhost:3000/</b>"
+  }
+}
