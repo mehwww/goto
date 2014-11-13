@@ -1,74 +1,87 @@
 'use strict';
 
-var config;
-chrome.storage.sync.get('config', function (result) {
-  config = result.config ? result.config : [];
-})
+var config = [];
+var keyword = '';
+var redirect = '';
 
+chrome.storage.sync.get('config', function (result) {
+  if (!result.config) {
+    var data = [
+      {keyword: 'l', redirect: 'http://localhost:$1/'},
+      {keyword: 'g', redirect: 'https://www.google.com/'}
+    ]
+    chrome.storage.sync.set({
+      config: data
+    })
+    config = data;
+  } else {
+    config = result.config
+  }
+})
 
 chrome.omnibox.onInputChanged.addListener(
   function (text, suggest) {
     text = text.trim().split(/[ ]+/);
-    var keyword = text.shift();
+    if (keyword != text[0]) {
+      resetDefaultSuggestion();
+    }
+    keyword = text.shift();
+    redirect = '';
     var params = text;
-    var suggestList = [];
-    resetDefaultSuggestion();
-    suggest(suggestList);
+    var url = '';
+    var tag = '';
+
     config.map(function (row) {
-      if (row.keyword.indexOf(keyword) != -1) {
-        if (row.keyword == keyword) {
-          chrome.omnibox.setDefaultSuggestion({
-            description: row.keyword + ' - ' + row.redirect
-          });
+      if (row.keyword == keyword) {
+        var url = getUrl(row.redirect, params);
+        var tag = getUrlTag(row.redirect, params);
+        if (url.indexOf('$') != -1) {
+          redirect = '';
+          tag = tag + ' <match>Invalid Url</match>'
         } else {
-          suggestList.push({
-            content: row.redirect,
-            description: row.keyword + ' - ' + row.redirect
-          })
+          redirect = url;
         }
+        chrome.omnibox.setDefaultSuggestion({
+          description: '<match>' + row.keyword + '</match>' + ' - ' + tag
+        });
       }
     })
-    suggest(suggestList);
-
-    /*
-     chrome.omnibox.setDefaultSuggestion({
-     description: keyword ? keyword : '<dim>input key</dim>'
-     });
-     suggest([
-     {
-     content: keyword + " one",
-     description: "the first one"
-     },
-     {
-     content:  " number two",
-     description: "the second entry"
-     }
-     ]);
-     */
   });
 
-// This event is fired with the user accepts the input in the omnibox.
-chrome.omnibox.onInputEntered.addListener(
-  function (text) {
-    console.log('inputEntered: ' + text);
-    //navigate('http://www.baidu.com')
+chrome.omnibox.onInputEntered.addListener(function (text) {
+  console.log(redirect);
+  if (redirect) navigate(redirect);
+});
+
+function getUrl(redirect, params) {
+  var url = redirect;
+  params.map(function (param, index) {
+    var placeholder = '$' + (index + 1);
+    url = url.replace(placeholder, param);
   });
+  return url;
+}
+
+function getUrlTag(redirect, params) {
+  var tag = redirect;
+  params.map(function (param, index) {
+    var placeholder = '$' + (index + 1);
+    tag = tag.replace(placeholder, '<match>' + param + '</match>');
+  });
+  tag = tag.replace(/\$[0-9]/, '<match>' + '$&' + '</match>')
+  tag = '<url>' + tag + '</url>'
+  return tag;
+}
+
 
 function resetDefaultSuggestion() {
   chrome.omnibox.setDefaultSuggestion({
-//    description: '<url><match>src:</match></url> Search Chromium source'
-//    description: '<url>url</url>' +
-//    '<match>match</match>' +
-//    '<url><match>url+match</match></url>' +
-//    '<dim>dim</dim>'
     description: '<dim>Go to any website quick</dim>'
   });
 }
 
-function updateDefaultSuggestion(text) {
-
-}
-
 function navigate(url) {
-  chrome.tabs.update({url: url});
+  chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+    chrome.tabs.update(tabs[0].id, {url: url});
+  });
 }

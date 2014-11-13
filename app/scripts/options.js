@@ -1,5 +1,4 @@
 function updateConfig(data) {
-  console.log('update config', data);
   chrome.storage.sync.set({
     config: data
   })
@@ -9,20 +8,20 @@ var ConfigForm = React.createClass({displayName: 'ConfigForm',
   removeRow: function (index) {
     var configData = this.state.config;
     configData.splice(index, 1);
-    console.log('removeRow ', index);
+    //console.log('removeRow ', index);
     updateConfig(configData);
     this.setState({config: configData});
   },
   updateRow: function (index, row) {
     var configData = this.state.config;
     configData.splice(index, 1, row)
-    console.log('updateRow ', index, ' with ', row);
+    //console.log('updateRow ', index, ' with ', row);
     updateConfig(configData);
     this.setState({config: configData});
   },
   newRow: function () {
     var configData = this.state.config;
-    console.log('newrow', configData);
+    //console.log('newrow', configData);
     configData.push({
       keyword: '',
       redirect: ''
@@ -157,3 +156,11 @@ React.render(
   React.createElement(ConfigForm, null),
   document.getElementById('ConfigForm')
 );
+
+React.render(
+  React.createElement("div", null, 
+    React.createElement("h1", null, chrome.i18n.getMessage('optionTitle')), 
+    React.createElement("p", {dangerouslySetInnerHTML: {__html: chrome.i18n.getMessage('optionDescription')}})
+  ),
+  document.getElementById('Introduction')
+)
